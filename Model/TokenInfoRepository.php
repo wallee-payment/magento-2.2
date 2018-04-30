@@ -114,7 +114,7 @@ class TokenInfoRepository implements TokenInfoRepositoryInterface
         $object = $this->_tokenInfoFactory->create();
         $this->_resource->load($object, $entityId);
         if (! $object->getEntityId()) {
-            throw new NoSuchEntityException(\__('Requested entity doesn\'t exist'));
+            throw new NoSuchEntityException(\__('Requested entity does not exist'));
         }
         return $object;
     }
@@ -140,7 +140,7 @@ class TokenInfoRepository implements TokenInfoRepositoryInterface
         $object = $this->_tokenInfoFactory->create();
         $this->_resource->loadByToken($object, $spaceId, $tokenId);
         if (! $object->getEntityId()) {
-            throw new NoSuchEntityException(\__('Requested entity doesn\'t exist'));
+            throw new NoSuchEntityException(\__('Requested entity does not exist'));
         }
         return $object;
     }

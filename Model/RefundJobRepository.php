@@ -114,7 +114,7 @@ class RefundJobRepository implements RefundJobRepositoryInterface
         $object = $this->refundJobFactory->create();
         $this->_resource->load($object, $entityId);
         if (! $object->getEntityId()) {
-            throw new NoSuchEntityException(\__('Requested entity doesn\'t exist'));
+            throw new NoSuchEntityException(\__('Requested entity does not exist'));
         }
         return $object;
     }
@@ -136,7 +136,7 @@ class RefundJobRepository implements RefundJobRepositoryInterface
         $object = $this->_refundJobFactory->create();
         $this->_resource->load($object, $orderId, RefundJobInterface::ORDER_ID);
         if (! $object->getEntityId()) {
-            throw new NoSuchEntityException(\__('Requested entity doesn\'t exist'));
+            throw new NoSuchEntityException(\__('Requested entity does not exist'));
         }
         return $object;
     }
@@ -158,7 +158,7 @@ class RefundJobRepository implements RefundJobRepositoryInterface
         $object = $this->_refundJobFactory->create();
         $this->_resource->load($object, $externalId, RefundJobInterface::EXTERNAL_ID);
         if (! $object->getEntityId()) {
-            throw new NoSuchEntityException(\__('Requested entity doesn\'t exist'));
+            throw new NoSuchEntityException(\__('Requested entity does not exist'));
         }
         return $object;
     }

@@ -114,7 +114,7 @@ class TransactionInfoRepository implements TransactionInfoRepositoryInterface
         $object = $this->_transactionInfoFactory->create();
         $this->_resource->load($object, $entityId);
         if (! $object->getEntityId()) {
-            throw new NoSuchEntityException(\__('Requested entity doesn\'t exist'));
+            throw new NoSuchEntityException(\__('Requested entity does not exist'));
         }
         return $object;
     }
@@ -140,7 +140,7 @@ class TransactionInfoRepository implements TransactionInfoRepositoryInterface
         $object = $this->_transactionInfoFactory->create();
         $this->_resource->loadByTransaction($object, $spaceId, $transactionId);
         if (! $object->getEntityId()) {
-            throw new NoSuchEntityException(\__('Requested entity doesn\'t exist'));
+            throw new NoSuchEntityException(\__('Requested entity does not exist'));
         }
         return $object;
     }
@@ -162,7 +162,7 @@ class TransactionInfoRepository implements TransactionInfoRepositoryInterface
         $object = $this->_transactionInfoFactory->create();
         $this->_resource->load($object, $orderId, TransactionInfoInterface::ORDER_ID);
         if (! $object->getEntityId()) {
-            throw new NoSuchEntityException(\__('Requested entity doesn\'t exist'));
+            throw new NoSuchEntityException(\__('Requested entity does not exist'));
         }
         return $object;
     }
