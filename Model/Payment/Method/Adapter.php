@@ -176,7 +176,7 @@ class Adapter extends \Magento\Payment\Model\Method\Adapter
     protected function isPaymentMethodPossible(array $possiblePaymentMethods)
     {
         foreach ($possiblePaymentMethods as $possiblePaymentMethod) {
-            if ($possiblePaymentMethod->getId() == $this->getPaymentMethodConfigurationId()) {
+            if ($possiblePaymentMethod->getId() == $this->getPaymentMethodConfiguration()->getConfigurationId()) {
                 return true;
             }
         }
