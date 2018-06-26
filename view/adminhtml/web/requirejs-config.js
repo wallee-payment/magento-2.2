@@ -1,7 +1,7 @@
 /**
- * Wallee Magento 2
+ * wallee Magento 2
  *
- * This Magento 2 extension enables to process payments with Wallee (https://www.wallee.com/).
+ * This Magento 2 extension enables to process payments with wallee (https://www.wallee.com/).
  *
  * @package Wallee_Payment
  * @author customweb GmbH (http://www.customweb.com/)
