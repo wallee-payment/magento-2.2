@@ -215,7 +215,7 @@ abstract class AbstractLineItemService
             $discountItem->setUniqueId($this->getUniqueId($entityItem) . '-discount');
             $discountItem->setAmountIncludingTax(
                 $this->_helper->roundAmount($discountAmount * - 1, $this->getCurrencyCode($entity)));
-            $discountItem->setName(\__('Discount'));
+            $discountItem->setName((String) \__('Discount'));
             $discountItem->setQuantity($entityItem->getQty() ? $entityItem->getQty() : $entityItem->getQtyOrdered());
             $discountItem->setSku($this->_helper->fixLength($entityItem->getSku(), 191) . '-discount');
             if ($this->_taxHelper->applyTaxAfterDiscount($entityItem->getStore()) && $entityItem->getTaxPercent()) {
