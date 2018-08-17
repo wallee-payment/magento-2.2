@@ -95,6 +95,11 @@ class ConfigProvider implements ConfigProviderInterface
                 $this->_checkoutSession->getQuote());
         } catch (\Exception $e) {}
 
+        try {
+            $config['wallee']['paymentPageUrl'] = $this->_transactionService->getPaymentPageUrl(
+                $this->_checkoutSession->getQuote());
+        } catch (\Exception $e) {}
+
         $stateFilter = $this->_filterBuilder->setConditionType('in')
             ->setField(PaymentMethodConfigurationInterface::STATE)
             ->setValue(

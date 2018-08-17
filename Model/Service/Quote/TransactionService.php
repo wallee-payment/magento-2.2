@@ -86,6 +86,19 @@ class TransactionService extends AbstractTransactionService
     }
 
     /**
+     * Gets the URL to the payment page.
+     *
+     * @param Quote $quote
+     * @return string
+     */
+    public function getPaymentPageUrl(Quote $quote)
+    {
+        $transaction = $this->getTransactionByQuote($quote);
+        return $this->_apiClient->getService(TransactionApiService::class)->buildPaymentPageUrl(
+            $transaction->getLinkedSpaceId(), $transaction->getId());
+    }
+
+    /**
      * Gets the payment methods that can be used with the given quote.
      *
      * @param Quote $quote

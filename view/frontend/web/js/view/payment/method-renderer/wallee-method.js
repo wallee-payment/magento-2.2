@@ -49,15 +49,17 @@ define([
 		createHandler: function(){
 			if (this.handler) return;
 			
-			fullScreenLoader.startLoader();
-			this.handler = window.IframeCheckoutHandler(this.getConfigurationId());
-			this.handler.create(this.getFormId(), (function(validationResult){
-				if (validationResult.success) {
-					this.placeOrder();
-				}
-			}).bind(this), function(){
-				fullScreenLoader.stopLoader();
-			});
+			if (typeof window.IframeCheckoutHandler != 'undefined') {
+				fullScreenLoader.startLoader();
+				this.handler = window.IframeCheckoutHandler(this.getConfigurationId());
+				this.handler.create(this.getFormId(), (function(validationResult){
+					if (validationResult.success) {
+						this.placeOrder();
+					}
+				}).bind(this), function(){
+					fullScreenLoader.stopLoader();
+				});
+			}
 		},
 		
 		selectPaymentMethod: function(){
@@ -67,11 +69,20 @@ define([
 		},
 		
         validateIframe: function(){
-        	this.handler.validate();
+        	if (this.handler) {
+        		this.handler.validate();
+        	} else {
+        		this.placeOrder();
+        	}
         },
         
         afterPlaceOrder: function(){
-        	this.handler.submit();
+        	if (this.handler) {
+        		this.handler.submit();
+        	} else {
+        		fullScreenLoader.startLoader();
+                window.location.replace(window.checkoutConfig.wallee.paymentPageUrl + "&paymentMethodConfigurationId=" + this.getConfigurationId());
+        	}
         }
 	});
 });
