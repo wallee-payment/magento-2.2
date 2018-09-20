@@ -86,8 +86,6 @@ class RefundCommand implements CommandInterface
 
     public function execute(array $commandSubject)
     {
-        $amount = SubjectReader::readAmount($commandSubject);
-
         /** @var \Magento\Sales\Model\Order\Payment $payment */
         $payment = SubjectReader::readPayment($commandSubject)->getPayment();
         $creditmemo = $payment->getCreditmemo();
@@ -99,6 +97,17 @@ class RefundCommand implements CommandInterface
                 $refund = $this->_apiClient->getService(RefundService::class)->refund(
                     $creditmemo->getOrder()
                         ->getWalleeSpaceId(), $refundJob->getRefund());
+            } catch (\Wallee\Sdk\ApiException $e) {
+                if ($e->getResponseObject() instanceof \Wallee\Sdk\Model\ClientError) {
+                    $this->_refundJobRepository->delete($refundJob);
+                    throw new \Magento\Framework\Exception\LocalizedException(
+                        \__($e->getResponseObject()->getMessage()));
+                } else {
+                    $creditmemo->setWalleeKeepRefundJob(true);
+                    $this->_logger->critical($e);
+                    throw new \Magento\Framework\Exception\LocalizedException(
+                        \__('There has been an error while sending the refund to the gateway.'));
+                }
             } catch (\Exception $e) {
                 $creditmemo->setWalleeKeepRefundJob(true);
                 $this->_logger->critical($e);
@@ -108,9 +117,8 @@ class RefundCommand implements CommandInterface
 
             if ($refund->getState() == RefundState::FAILED) {
                 throw new \Magento\Framework\Exception\LocalizedException(
-                    $this->_localeHelper->translate(
-                        $refund->getFailureReason()
-                            ->getDescription()));
+                    $this->_localeHelper->translate($refund->getFailureReason()
+                        ->getDescription()));
             } elseif ($refund->getState() == RefundState::PENDING || $refund->getState() == RefundState::MANUAL_CHECK) {
                 $creditmemo->setWalleeKeepRefundJob(true);
                 throw new \Magento\Framework\Exception\LocalizedException(

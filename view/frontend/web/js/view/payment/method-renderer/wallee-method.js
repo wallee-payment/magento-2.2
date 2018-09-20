@@ -52,6 +52,12 @@ define([
 			if (typeof window.IframeCheckoutHandler != 'undefined') {
 				fullScreenLoader.startLoader();
 				this.handler = window.IframeCheckoutHandler(this.getConfigurationId());
+				this.handler.setEnableSubmitCallback(function(){
+					$('button.checkout').prop('disabled', false);
+				});
+				this.handler.setDisableSubmitCallback(function(){
+					$('button.checkout').prop('disabled', true);
+				});
 				this.handler.create(this.getFormId(), (function(validationResult){
 					if (validationResult.success) {
 						this.placeOrder();
