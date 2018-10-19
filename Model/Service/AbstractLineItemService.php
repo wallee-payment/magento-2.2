@@ -239,9 +239,9 @@ abstract class AbstractLineItemService
     protected function getAttributeKey($option)
     {
         if (isset($option['option_id']) && ! empty($option['option_id'])) {
-            return 'option_' . $option['option_id'];
+            return $this->_helper->fixLength('option_' . $option['option_id'], 40);
         } else {
-            return \preg_replace('/[^a-z0-9]/', '', strtolower($option['label']));
+            return $this->_helper->fixLength(\preg_replace('/[^a-z0-9]/', '', strtolower($option['label'])), 40);
         }
     }
 

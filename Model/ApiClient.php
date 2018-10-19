@@ -62,7 +62,7 @@ class ApiClient
      */
     public function getService($type)
     {
-        $type = ltrim($type, '\\');
+        $type = \ltrim($type, '\\');
         if (! isset($this->sharedInstances[$type])) {
             $this->sharedInstances[$type] = new $type($this->getApiClient());
         }
@@ -72,7 +72,7 @@ class ApiClient
     /**
      * Gets the gateway API client.
      *
-     * @throws ApiClientException
+     * @throws \Wallee\Payment\Model\ApiClientException
      * @return \Wallee\Sdk\ApiClient
      */
     public function getApiClient()
@@ -85,7 +85,7 @@ class ApiClient
                 $client->setBasePath($this->getBaseGatewayUrl() . '/api');
                 $this->apiClient = $client;
             } else {
-                throw new ApiClientException('The wallee API user data are incomplete.');
+                throw new \Wallee\Payment\Model\ApiClientException('The wallee API user data are incomplete.');
             }
         }
         return $this->apiClient;
@@ -114,6 +114,6 @@ class ApiClient
      */
     protected function getBaseGatewayUrl()
     {
-        return rtrim($this->_scopeConfig->getValue('wallee_payment/general/base_gateway_url'), '/');
+        return \rtrim($this->_scopeConfig->getValue('wallee_payment/general/base_gateway_url'), '/');
     }
 }
