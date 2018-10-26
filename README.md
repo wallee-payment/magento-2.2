@@ -10,8 +10,8 @@ This repository contains the Magento 2 extension that enables to process payment
 
 ## Documentation
 
-* [Documentation](https://plugin-documentation.wallee.com/wallee-payment/magento-2/1.0.8/docs/en/documentation.html)
+* [Documentation](https://plugin-documentation.wallee.com/wallee-payment/magento-2/1.0.11/docs/en/documentation.html)
 
 ## License
 
-Please see the [license file](https://github.com/wallee-payment/magento-2/blob/1.0.8/LICENSE) for more information.
+Please see the [license file](https://github.com/wallee-payment/magento-2/blob/1.0.11/LICENSE) for more information.
