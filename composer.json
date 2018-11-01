@@ -29,5 +29,8 @@
 		"psr-4": {
 			"Wallee\\Payment\\": ""
 		}
+	},
+	"suggest": {
+		"fooman/surcharge-payment-m2": "^3.0"
 	}
 }

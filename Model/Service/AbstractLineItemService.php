@@ -11,7 +11,9 @@
 namespace Wallee\Payment\Model\Service;
 
 use Magento\Customer\Model\GroupRegistry as CustomerGroupRegistry;
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\DataObject;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Tax\Api\TaxClassRepositoryInterface;
 use Magento\Tax\Helper\Data as TaxHelper;
@@ -71,6 +73,11 @@ abstract class AbstractLineItemService
     protected $_groupRegistry;
 
     /**
+     * @var \Magento\Framework\Event\ManagerInterface
+     */
+    protected $_eventManager;
+
+    /**
      *
      * @param Helper $helper
      * @param LineItemHelper $lineItemHelper
@@ -79,10 +86,18 @@ abstract class AbstractLineItemService
      * @param TaxHelper $taxHelper
      * @param TaxCalculation $taxCalculation
      * @param CustomerGroupRegistry $groupRegistry
+     * @param Context $context
      */
-    public function __construct(Helper $helper, LineItemHelper $lineItemHelper, ScopeConfigInterface $scopeConfig,
-        TaxClassRepositoryInterface $taxClassRepository, TaxHelper $taxHelper, TaxCalculation $taxCalculation,
-        CustomerGroupRegistry $groupRegistry)
+    public function __construct(
+        Helper $helper,
+        LineItemHelper $lineItemHelper,
+        ScopeConfigInterface $scopeConfig,
+        TaxClassRepositoryInterface $taxClassRepository,
+        TaxHelper $taxHelper,
+        TaxCalculation $taxCalculation,
+        CustomerGroupRegistry $groupRegistry,
+        Context $context
+)
     {
         $this->_helper = $helper;
         $this->_lineItemHelper = $lineItemHelper;
@@ -91,6 +106,7 @@ abstract class AbstractLineItemService
         $this->_taxHelper = $taxHelper;
         $this->_taxCalculation = $taxCalculation;
         $this->_groupRegistry = $groupRegistry;
+        $this->_eventManager = $context->getEventManager();
     }
 
     /**
@@ -114,7 +130,10 @@ abstract class AbstractLineItemService
             $items[] = $shippingItem;
         }
 
-        return $items;
+        $transport = new DataObject(['items' => $items]);
+        $this->_eventManager->dispatch('wallee_convert_line_items', ['transport' => $transport, 'entity' => $entity]);
+
+        return $transport->getData('items');
     }
 
     /**
