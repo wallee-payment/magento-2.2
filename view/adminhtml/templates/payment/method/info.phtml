@@ -35,7 +35,7 @@
     		<?php if ($block->getTransaction()->getFailureReason() != null) : ?>
         		<tr>
         			<th><?=$block->escapeHtml(\__('Failure Reason'))?></th>
-        			<td><?=$block->escapeHtml($block->getTransaction()->getFailureReason()) ?></td>
+        			<td><?=$block->escapeHtml($block->translate($block->getTransaction()->getFailureReason())) ?></td>
         		</tr>
     		<?php endif; ?>
     		<tr>
