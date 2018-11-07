@@ -65,12 +65,16 @@ class Locale extends AbstractHelper
     /**
      * Gets the translation in the given language.
      *
-     * @param array $translatedString
+     * @param mixed $translatedString
      * @param string $language
      * @return string|NULL
      */
-    public function translate(array $translatedString, $language = null)
+    public function translate($translatedString, $language = null)
     {
+        if (!\is_array($translatedString)) {
+            return $translatedString;
+        }
+
         if ($language == null) {
             if ($this->_helper->isAdminArea()) {
                 $language = $this->_backendLocaleManager->getUserInterfaceLocale();

@@ -200,7 +200,7 @@ class Converter
         } catch (\Exception $e) {
             return false;
         }
-        
+
         return $this->_resourceConnection->getConnection()->isTableExists(
             $this->_resourceConnection->getTableName('wallee_payment_method_configuration'));
     }

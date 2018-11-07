@@ -15,6 +15,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Address;
 use Magento\Sales\Model\Order\Invoice;
 use Magento\Store\Model\ScopeInterface;
 use Wallee\Payment\Api\PaymentMethodConfigurationManagementInterface;
@@ -24,6 +25,7 @@ use Wallee\Payment\Model\ApiClient;
 use Wallee\Payment\Model\Service\AbstractTransactionService;
 use Wallee\Sdk\VersioningException;
 use Wallee\Sdk\Model\AbstractTransactionPending;
+use Wallee\Sdk\Model\AddressCreate;
 use Wallee\Sdk\Model\CustomersPresence;
 use Wallee\Sdk\Model\EntityQuery;
 use Wallee\Sdk\Model\Token;
@@ -34,8 +36,8 @@ use Wallee\Sdk\Model\TransactionState;
 use Wallee\Sdk\Service\DeliveryIndicationService;
 use Wallee\Sdk\Service\TransactionCompletionService;
 use Wallee\Sdk\Service\TransactionInvoiceService;
-use Wallee\Sdk\Service\TransactionVoidService;
 use Wallee\Sdk\Service\TransactionService as TransactionApiService;
+use Wallee\Sdk\Service\TransactionVoidService;
 
 /**
  * Service to handle transactions in order context.
@@ -249,6 +251,34 @@ class TransactionService extends AbstractTransactionService
 
         $address = $this->convertAddress($order->getShippingAddress());
         $address->setEmailAddress($this->getCustomerEmailAddress($order->getCustomerEmail(), $order->getCustomerId()));
+        return $address;
+    }
+
+    /**
+     * Converts the given address.
+     *
+     * @param Address $customerAddress
+     * @return AddressCreate
+     */
+    protected function convertAddress(Address $customerAddress)
+    {
+        $address = new AddressCreate();
+        $address->setSalutation(
+            $this->_helper->fixLength($this->_helper->removeLinebreaks($customerAddress->getPrefix()), 20));
+        $address->setCity($this->_helper->fixLength($this->_helper->removeLinebreaks($customerAddress->getCity()), 100));
+        $address->setCountry($customerAddress->getCountryId());
+        $address->setFamilyName(
+            $this->_helper->fixLength($this->_helper->removeLinebreaks($customerAddress->getLastname()), 100));
+        $address->setGivenName(
+            $this->_helper->fixLength($this->_helper->removeLinebreaks($customerAddress->getFirstname()), 100));
+        $address->setOrganizationName(
+            $this->_helper->fixLength($this->_helper->removeLinebreaks($customerAddress->getCompany()), 100));
+        $address->setPhoneNumber($customerAddress->getTelephone());
+        $address->setPostalState($customerAddress->getRegionCode());
+        $address->setPostCode(
+            $this->_helper->fixLength($this->_helper->removeLinebreaks($customerAddress->getPostcode()), 40));
+        $street = $customerAddress->getStreet();
+        $address->setStreet($this->_helper->fixLength(\is_array($street) ? \implode("\n", $street) : $street, 300));
         return $address;
     }
 

@@ -173,7 +173,7 @@ class LineItemReductionService
      */
     protected function fixReductions(array $reductions, Creditmemo $creditmemo)
     {
-        /** @var \Wallee\Sdk\Model\LineItem $baseLineItems */
+        /** @var \Wallee\Sdk\Model\LineItem[] $baseLineItems */
         $baseLineItems = $this->getBaseLineItems(
             $creditmemo->getOrder()
                 ->getWalleeSpaceId(),
@@ -196,10 +196,105 @@ class LineItemReductionService
                     $fixedReductions[] = $reduction;
                 }
             }
-            return $fixedReductions;
+            $fixedReductionAmount = $this->_reductionHelper->getReducedAmount($baseLineItems, $fixedReductions);
+            $roundingDifference = $creditmemo->getGrandTotal() - $fixedReductionAmount;
+            return $this->distributeRoundingDifference($fixedReductions, 0, $roundingDifference, $baseLineItems, $creditmemo->getOrderCurrencyCode());
         } else {
             return $reductions;
         }
+    }
+
+    /**
+     *
+     * @param LineItemReductionCreate[] $reductions
+     * @param int $index
+     * @param number $remainder
+     * @param \Wallee\Sdk\Model\LineItem[] $baseLineItems
+     * @param string $currencyCode
+     * @throws \Exception
+     * @return LineItemReductionCreate[]
+     */
+    private function distributeRoundingDifference(array $reductions, $index, $remainder, array $baseLineItems, $currencyCode){
+        $digits = $this->_helper->getCurrencyFractionDigits($currencyCode);
+        $currentReduction = $reductions[$index];
+        $delta = $remainder;
+        $change = false;
+        $positive = $delta > 0;
+        $newReduction = null;
+        $appliedDelta = null;
+        if ($currentReduction->getUnitPriceReduction() != 0 && $currentReduction->getQuantityReduction() == 0) {
+            $lineItem = $this->getLineItemByUniqueId($baseLineItems, $currentReduction->getLineItemUniqueId());
+            if ($lineItem != null) {
+                while($delta != 0){
+                    if ($currentReduction->getUnitPriceReduction() < 0) {
+                        $newReduction = $this->_helper->roundAmount($currentReduction->getUnitPriceReduction() - ($delta / $lineItem->getQuantity()), $currencyCode);
+                    } else {
+                        $newReduction = $this->_helper->roundAmount($currentReduction->getUnitPriceReduction() + ($delta / $lineItem->getQuantity()), $currencyCode);
+                    }
+                    $appliedDelta = ($newReduction - $currentReduction->getUnitPriceReduction()) * $lineItem->getQuantity();
+                    if ($appliedDelta <= $delta && $this->compareAmounts($newReduction, $lineItem->getUnitPriceIncludingTax(), $currencyCode) <= 0) {
+                        $change = true;
+                        break;
+                    }
+
+                    $newDelta = \round((\abs($delta) - \pow(0.1, $digits+1)) * ($positive ? 1 : -1), 10);
+                    if(($positive xor $newDelta > 0) && $delta != 0){
+                        break;
+                    }
+                    $delta = $newDelta;
+                }
+            }
+        }
+
+        if($change){
+            $currentReduction->setUnitPriceReduction($newReduction);
+            $newRemainder = $remainder - $appliedDelta;
+        } else {
+            $newRemainder = $remainder;
+        }
+
+        if($index + 1 < \count($reductions) && $newRemainder != 0){
+            return $this->distributeRoundingDifference($reductions, $index+1, $newRemainder, $baseLineItems, $currencyCode);
+        } else {
+            if($newRemainder != 0){
+                throw new \Exception('Could not distribute the rounding difference.');
+            } else {
+                return $reductions;
+            }
+        }
+    }
+
+    /**
+     *
+     * @param number $amount1
+     * @param number $amount2
+     * @param string $currencyCode
+     * @return number
+     */
+    private function compareAmounts($amount1, $amount2, $currencyCode) {
+        $roundedAmount1 = $this->_helper->roundAmount($amount1, $currencyCode);
+        $roundedAmount2 = $this->_helper->roundAmount($amount2, $currencyCode);
+        if ($roundedAmount1 < $roundedAmount2) {
+            return -1;
+        } elseif ($roundedAmount1 > $roundedAmount2) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     *
+     * @param \Wallee\Sdk\Model\LineItem[] $lineItems
+     * @param string $uniqueId
+     */
+    private function getLineItemByUniqueId(array $lineItems, $uniqueId) {
+        foreach ($lineItems as $lineItem) {
+            if ($lineItem->getUniqueId() == $uniqueId) {
+                return $lineItem;
+            }
+        }
+        return null;
     }
 
     /**

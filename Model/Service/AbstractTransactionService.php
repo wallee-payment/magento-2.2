@@ -11,14 +11,12 @@
 namespace Wallee\Payment\Model\Service;
 
 use Magento\Customer\Model\CustomerRegistry;
-use Magento\Customer\Model\Address\AddressModelInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Model\Quote;
 use Wallee\Payment\Api\PaymentMethodConfigurationManagementInterface;
 use Wallee\Payment\Helper\Data as Helper;
 use Wallee\Payment\Model\ApiClient;
-use Wallee\Sdk\Model\AddressCreate;
 use Wallee\Sdk\Model\Gender;
 use Wallee\Sdk\Model\Transaction;
 use Wallee\Sdk\Service\TransactionService;
@@ -121,33 +119,6 @@ abstract class AbstractTransactionService
         $quote->setWalleeSpaceId($transaction->getLinkedSpaceId());
         $quote->setWalleeTransactionId($transaction->getId());
         $this->_quoteRepository->save($quote);
-    }
-
-    /**
-     * Converts the given address.
-     *
-     * @param AddressModelInterface $customerAddress
-     * @return AddressCreate
-     */
-    protected function convertAddress(AddressModelInterface $customerAddress)
-    {
-        $address = new AddressCreate();
-        $address->setSalutation(
-            $this->_helper->fixLength($this->_helper->removeLinebreaks($customerAddress->getPrefix()), 20));
-        $address->setCity($this->_helper->fixLength($this->_helper->removeLinebreaks($customerAddress->getCity()), 100));
-        $address->setCountry($customerAddress->getCountryId());
-        $address->setFamilyName(
-            $this->_helper->fixLength($this->_helper->removeLinebreaks($customerAddress->getLastname()), 100));
-        $address->setGivenName(
-            $this->_helper->fixLength($this->_helper->removeLinebreaks($customerAddress->getFirstname()), 100));
-        $address->setOrganizationName(
-            $this->_helper->fixLength($this->_helper->removeLinebreaks($customerAddress->getCompany()), 100));
-        $address->setPhoneNumber($customerAddress->getTelephone());
-        $address->setPostalState($customerAddress->getRegionCode());
-        $address->setPostCode(
-            $this->_helper->fixLength($this->_helper->removeLinebreaks($customerAddress->getPostcode()), 40));
-        $address->setStreet($this->_helper->fixLength($customerAddress->getStreetFull(), 300));
-        return $address;
     }
 
     /**
