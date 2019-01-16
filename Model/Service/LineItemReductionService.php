@@ -269,7 +269,7 @@ class LineItemReductionService
                 $currencyCode);
         } else {
             if ($newRemainder != 0) {
-                throw new LocalizedException('Could not distribute the rounding difference.');
+                throw new LocalizedException(__('Could not distribute the rounding difference.'));
             } else {
                 return $reductions;
             }
