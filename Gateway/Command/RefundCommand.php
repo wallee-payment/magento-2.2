@@ -120,8 +120,7 @@ class RefundCommand implements CommandInterface
                         ->getDescription()));
             } elseif ($refund->getState() == RefundState::PENDING || $refund->getState() == RefundState::MANUAL_CHECK) {
                 $creditmemo->setWalleeKeepRefundJob(true);
-                throw new \Magento\Framework\Exception\LocalizedException(
-                    \__('The refund was requested successfully, but is still pending on the gateway.'));
+                $creditmemo->addComment(\__('The refund was requested successfully, but is still pending on the gateway.'));
             }
 
             $creditmemo->setWalleeExternalId($refund->getExternalId());
