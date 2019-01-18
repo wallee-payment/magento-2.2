@@ -268,7 +268,7 @@ class LineItemReductionService
             return $this->distributeRoundingDifference($reductions, $index + 1, $newRemainder, $baseLineItems,
                 $currencyCode);
         } else {
-            if ($newRemainder != 0) {
+            if ($newRemainder <= 0.005) {
                 throw new LocalizedException('Could not distribute the rounding difference.');
             } else {
                 return $reductions;
