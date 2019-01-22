@@ -121,6 +121,7 @@ class RefundCommand implements CommandInterface
             } elseif ($refund->getState() == RefundState::PENDING || $refund->getState() == RefundState::MANUAL_CHECK) {
                 $creditmemo->setWalleeKeepRefundJob(true);
                 $creditmemo->addComment(\__('The refund was requested successfully, but is still pending on the gateway.'));
+                return $this;
             }
 
             $creditmemo->setWalleeExternalId($refund->getExternalId());
