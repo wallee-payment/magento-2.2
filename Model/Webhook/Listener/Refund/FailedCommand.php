@@ -54,7 +54,7 @@ class FailedCommand extends AbstractCommand
      */
     public function execute($entity, Order $order)
     {
-        $order->addCommentToStatusHistory(
+        $order->addStatusHistoryComment(
             \__('The refund of %1 failed on the gateway: %2',
                 $order->getBaseCurrency()
                     ->formatTxt($entity->getAmount()),
