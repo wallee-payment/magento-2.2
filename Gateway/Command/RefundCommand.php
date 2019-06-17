@@ -115,9 +115,8 @@ class RefundCommand implements CommandInterface
             }
 
             if ($refund->getState() == RefundState::FAILED) {
-                throw new \Magento\Framework\Exception\LocalizedException(
-                    $this->localeHelper->translate($refund->getFailureReason()
-                        ->getDescription()));
+                throw new \Magento\Framework\Exception\LocalizedException(\__($this->localeHelper->translate($refund->getFailureReason()
+                    ->getDescription())));
             } elseif ($refund->getState() == RefundState::PENDING || $refund->getState() == RefundState::MANUAL_CHECK) {
                 $creditmemo->setWalleeKeepRefundJob(true);
                 throw new \Magento\Framework\Exception\LocalizedException(
