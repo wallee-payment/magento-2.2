@@ -10,10 +10,12 @@
  */
 namespace Wallee\Payment\Console\Command;
 
+use Magento\Framework\App\Area;
+use Magento\Framework\App\State as AppState;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Wallee\Payment\Api\PaymentMethodConfigurationManagementInterface;
+use Wallee\Payment\Api\PaymentMethodConfigurationManagementInterface\Proxy as PaymentMethodConfigurationManagementInterfaceProxy;
 
 /**
  * Command to synchronize the payment methods.
@@ -23,27 +25,38 @@ class SynchronizePaymentMethods extends Command
 
     /**
      *
-     * @var PaymentMethodConfigurationManagementInterface
+     * @var AppState
+     */
+    private $appState;
+
+    /**
+     *
+     * @var PaymentMethodConfigurationManagementInterfaceProxy
      */
     private $paymentMethodConfigurationManagement;
 
     /**
      *
-     * @param PaymentMethodConfigurationManagementInterface $paymentMethodConfigurationManagement
+     * @param AppState $appState
+     * @param PaymentMethodConfigurationManagementInterfaceProxy $paymentMethodConfigurationManagement
      */
-    public function __construct(PaymentMethodConfigurationManagementInterface $paymentMethodConfigurationManagement)
+    public function __construct(AppState $appState,
+        PaymentMethodConfigurationManagementInterfaceProxy $paymentMethodConfigurationManagement)
     {
         parent::__construct();
+        $this->appState = $appState;
         $this->paymentMethodConfigurationManagement = $paymentMethodConfigurationManagement;
     }
 
     protected function configure()
     {
-        $this->setName('wallee:payment-method:synchronize')->setDescription('Synchronizes the wallee payment methods.');
+        $this->setName('wallee:payment-method:synchronize')->setDescription(
+            'Synchronizes the wallee payment methods.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->appState->setAreaCode(Area::AREA_ADMINHTML);
         $this->paymentMethodConfigurationManagement->synchronize($output);
     }
 }

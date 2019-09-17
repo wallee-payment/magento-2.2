@@ -18,7 +18,7 @@
 		}
 	],
 	"type" : "magento2-module",
-	"version" : "1.0.57",
+	"version" : "1.0.58",
 	"require" : {
 		"php": "7.0.2|7.0.4|~7.0.6|~7.1.0",
 		"magento/framework" : "^101.0.2",
