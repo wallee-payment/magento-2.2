@@ -15,7 +15,7 @@ use Magento\Framework\App\State as AppState;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Wallee\Payment\Api\PaymentMethodConfigurationManagementInterface\Proxy as PaymentMethodConfigurationManagementInterfaceProxy;
+use Wallee\Payment\Api\PaymentMethodConfigurationManagementInterface;
 
 /**
  * Command to synchronize the payment methods.
@@ -31,17 +31,17 @@ class SynchronizePaymentMethods extends Command
 
     /**
      *
-     * @var PaymentMethodConfigurationManagementInterfaceProxy
+     * @var PaymentMethodConfigurationManagementInterface
      */
     private $paymentMethodConfigurationManagement;
 
     /**
      *
      * @param AppState $appState
-     * @param PaymentMethodConfigurationManagementInterfaceProxy $paymentMethodConfigurationManagement
+     * @param PaymentMethodConfigurationManagementInterface $paymentMethodConfigurationManagement
      */
     public function __construct(AppState $appState,
-        PaymentMethodConfigurationManagementInterfaceProxy $paymentMethodConfigurationManagement)
+        PaymentMethodConfigurationManagementInterface $paymentMethodConfigurationManagement)
     {
         parent::__construct();
         $this->appState = $appState;
