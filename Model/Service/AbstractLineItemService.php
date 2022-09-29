@@ -417,11 +417,19 @@ abstract class AbstractLineItemService
      * @param \Magento\Quote\Model\Quote|\Magento\Sales\Model\Order|\Magento\Sales\Model\Order\Invoice $entity
      * @return TaxCreate
      */
-    protected function getShippingTax($entity)
-    {
-        $customerGroup = $this->groupRegistry->retrieve($entity->getCustomerGroupId());
+    protected function getShippingTax($entity) {
+        $taxClassId = null;
+        try {
+            $groupId = $entity->getCustomerGroupId();
+            if ($groupId) {
+                $customerGroup = $this->groupRegistry->retrieve($groupId);
+                $taxClassId = $customerGroup->getTaxClassId();
+            }
+        } catch (NoSuchEntityException $e) {
+            // group not found, do nothing
+        }
         $taxRateRequest = $this->taxCalculation->getRateRequest($entity->getShippingAddress(),
-            $entity->getBillingAddress(), $customerGroup->getTaxClassId(), $entity->getStore());
+            $entity->getBillingAddress(), $taxClassId, $entity->getStore());
         $shippingTaxClassId = $this->scopeConfig->getValue(
             \Magento\Tax\Model\Config::CONFIG_XML_PATH_SHIPPING_TAX_CLASS, ScopeInterface::SCOPE_STORE,
             $entity->getStoreId());

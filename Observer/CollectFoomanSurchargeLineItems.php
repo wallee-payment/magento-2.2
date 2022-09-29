@@ -18,6 +18,7 @@ use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Quote\Model\Quote;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Invoice;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Tax\Api\TaxClassRepositoryInterface;
 use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Tax\Model\Calculation as TaxCalculation;
@@ -242,9 +243,18 @@ class CollectFoomanSurchargeLineItems implements ObserverInterface
      */
     protected function getTax($entity, $code)
     {
-        $customerGroup = $this->groupRegistry->retrieve($entity->getCustomerGroupId());
+        $taxClassId = null;
+        try {
+            $groupId = $entity->getCustomerGroupId();
+            if ($groupId) {
+                $customerGroup = $this->groupRegistry->retrieve($groupId);
+                $taxClassId = $customerGroup->getTaxClassId();
+            }
+        } catch (NoSuchEntityException $e) {
+            // group not found, do nothing
+        }
         $taxRateRequest = $this->taxCalculation->getRateRequest($entity->getShippingAddress(),
-            $entity->getBillingAddress(), $customerGroup->getTaxClassId(), $entity->getStore());
+            $entity->getBillingAddress(), $taxClassId, $entity->getStore());
 
         /* @var \Fooman\Surcharge\Helper\Surcharge $surchargeHelper */
         $surchargeHelper = $this->objectManager->get('Fooman\Surcharge\Helper\Surcharge');
