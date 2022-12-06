@@ -10,7 +10,10 @@
  */
 namespace Wallee\Payment\Controller\Webhook;
 
+use Magento\Framework\App\CsrfAwareActionInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\Exception\NotFoundException;
 use Wallee\Payment\Model\Service\WebhookService;
 use Wallee\Payment\Model\Webhook\Request;
@@ -18,7 +21,7 @@ use Wallee\Payment\Model\Webhook\Request;
 /**
  * Frontend controller action to proces webhook requests.
  */
-class Index extends \Wallee\Payment\Controller\Webhook
+class Index extends \Wallee\Payment\Controller\Webhook implements CsrfAwareActionInterface
 {
 
     /**
@@ -67,5 +70,15 @@ class Index extends \Wallee\Payment\Controller\Webhook
             throw new \InvalidArgumentException('Unable to unserialize value.');
         }
         return new Request($parsedRequest);
+    }
+
+    public function validateForCsrf(RequestInterface $request): ?bool
+    {
+        return true;
+    }
+
+    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
+    {
+        return null;
     }
 }
